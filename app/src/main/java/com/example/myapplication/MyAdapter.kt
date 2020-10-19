@@ -11,10 +11,9 @@ class MyAdapter(private val data: Array<String>) : RecyclerView.Adapter<MyAdapte
     class MyViewHolder(val view: View): RecyclerView.ViewHolder(view){
 
         fun bind(text: String){
-            val tv = view.findViewById<TextView>(R.id.list_tv)
-            tv.text = text
+//            val tv = view.findViewById<TextView>(R.id.list_tv)
+//            tv.text = text
         }
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
