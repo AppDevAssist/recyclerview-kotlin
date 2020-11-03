@@ -11,11 +11,11 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
-    val data = arrayOf<String>("One", "Two", "three", "four","One", "Two", "three", "four","One", "Two", "three", "four","One", "Two", "three", "four","One", "Two", "three", "four","One", "Two", "three", "four","One", "Two", "three", "four")
+    lateinit var data: MutableList<Property>
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var manager: RecyclerView.LayoutManager
-    private lateinit var myAdapter: RecyclerView.Adapter<*>
+    private lateinit var myAdapter: MyAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +33,8 @@ class MainActivity : AppCompatActivity() {
             ) {
                 if(response.isSuccessful){
                     recyclerView = findViewById<RecyclerView>(R.id.recycler_view).apply{
-                        myAdapter = MyAdapter(response.body()!!)
+                        data = response.body() as MutableList<Property>
+                        myAdapter = MyAdapter(data){index -> deleteItem(index)}
                         layoutManager = manager
                         adapter = myAdapter
                     }
@@ -44,5 +45,12 @@ class MainActivity : AppCompatActivity() {
                 t.printStackTrace()
             }
         })
+    }
+
+    fun deleteItem(index: Int){
+        if(::data.isInitialized && ::myAdapter.isInitialized){
+            data.removeAt(index)
+            myAdapter.setItems(data)
+        }
     }
 }
