@@ -8,14 +8,14 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 
-private const val BASE_URL = "http://simple-node-app-nkd.herokuapp.com"
+private const val BASE_URL = "http://simple-node-app-nkd.herokuapp.com/"
 
 private val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
 private val retrofit = Retrofit.Builder().addConverterFactory(MoshiConverterFactory.create(moshi)).baseUrl(BASE_URL).build()
 
 interface ApiService{
 
-    @GET(".")
+    @GET("horizontal")
     fun getAllData(): Call<List<Property>>
 
 }

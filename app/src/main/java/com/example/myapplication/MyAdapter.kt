@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.myapplication.models.Property
@@ -17,12 +19,16 @@ class MyAdapter(private val data: List<Property>, val onClickDelete: (Int) -> Un
     inner class MyViewHolder(val view: View): RecyclerView.ViewHolder(view){
 
         fun bind(property: Property, index: Int){
-//            val tv = view.findViewById<TextView>(R.id.list_tv)
-//            tv.text = text
             val title = view.findViewById<TextView>(R.id.tvTitle)
             val imageView = view.findViewById<ImageView>(R.id.imageView)
             val description = view.findViewById<TextView>(R.id.tvDescription)
             val button = view.findViewById<Button>(R.id.button)
+            val constraintLayout = view.findViewById<ConstraintLayout>(R.id.constraintLayout)
+            val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
+
+            constraintLayout.visibility = View.VISIBLE
+            recyclerView.visibility = View.GONE
+
 
             title.text = property.title
             description.text = property.description
@@ -31,6 +37,22 @@ class MyAdapter(private val data: List<Property>, val onClickDelete: (Int) -> Un
 
             button.setOnClickListener{deleteItem(index)}
 
+        }
+
+        fun bindRecyclerView(data: List<Property>){
+            val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
+            val constraintLayout = view.findViewById<ConstraintLayout>(R.id.constraintLayout)
+
+            constraintLayout.visibility = View.GONE
+            recyclerView.visibility = View.VISIBLE
+
+            val manager : RecyclerView.LayoutManager = LinearLayoutManager(view.context, LinearLayoutManager.HORIZONTAL, true)
+            recyclerView.apply{
+                val data = data as MutableList<Property>
+                var myAdapter = MyAdapter(data){index -> deleteItem(index)}
+                layoutManager = manager
+                adapter = myAdapter
+            }
         }
     }
 
@@ -44,7 +66,11 @@ class MyAdapter(private val data: List<Property>, val onClickDelete: (Int) -> Un
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.bind(listData[position], position)
+        if(listData[position].horizontal){
+                listData[position].data?.let { holder.bindRecyclerView(it)}
+        }else {
+            holder.bind(listData[position], position)
+        }
     }
 
     fun deleteItem(index: Int){
