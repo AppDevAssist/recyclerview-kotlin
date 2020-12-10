@@ -2,11 +2,15 @@ package com.example.myapplication
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.myapplication.models.Property
 import com.example.myapplication.network.Api
+import com.facebook.shimmer.ShimmerFrameLayout
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -18,6 +22,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var manager: RecyclerView.LayoutManager
     private lateinit var myAdapter: MyAdapter
     private lateinit var swipeRefresh: SwipeRefreshLayout
+    private lateinit var shrimmerView: ShimmerFrameLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,11 +30,14 @@ class MainActivity : AppCompatActivity() {
 
         manager = LinearLayoutManager(this)
         swipeRefresh = findViewById(R.id.swipeRefresh)
+        shrimmerView = findViewById(R.id.shimmer_view_container)
 
         swipeRefresh.setOnRefreshListener {
             getAllData()
         }
+        
         getAllData()
+
     }
 
     fun getAllData(){
@@ -38,6 +46,8 @@ class MainActivity : AppCompatActivity() {
                 call: Call<List<Property>>,
                 response: Response<List<Property>>
             ) {
+                shrimmerView.stopShimmer()
+                shrimmerView.visibility = View.GONE
                 if(swipeRefresh.isRefreshing){
                     swipeRefresh.isRefreshing = false
                 }
