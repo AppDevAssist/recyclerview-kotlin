@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -68,9 +70,24 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun deleteItem(index: Int){
-        if(::data.isInitialized && ::myAdapter.isInitialized){
-            data.removeAt(index)
-            myAdapter.setItems(data)
+        val alertBuilder = AlertDialog.Builder(this)
+        alertBuilder.setTitle("Delete")
+        alertBuilder.setMessage("Do you want to delete this item ?")
+        alertBuilder.setPositiveButton("Delete"){_,_ ->
+            if(::data.isInitialized && ::myAdapter.isInitialized){
+                data.removeAt(index)
+                myAdapter.setItems(data)
+                Toast.makeText(this, "Item deleted", Toast.LENGTH_SHORT).show()
+            }
         }
+
+        alertBuilder.setNegativeButton("No"){_,_ ->
+
+        }
+
+        alertBuilder.setNeutralButton("Cancel"){_,_ ->
+
+        }
+       alertBuilder.show()
     }
 }
