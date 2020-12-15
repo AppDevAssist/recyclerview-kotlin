@@ -15,7 +15,7 @@ private val retrofit = Retrofit.Builder().addConverterFactory(MoshiConverterFact
 
 interface ApiService{
 
-    @GET("horizontal")
+    @GET(".")
     fun getAllData(): Call<List<Property>>
 
 }

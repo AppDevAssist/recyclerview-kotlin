@@ -74,13 +74,14 @@ class MyAdapter(private val data: List<Property>, val onClickDelete: (Int) -> Un
     }
 
     fun deleteItem(index: Int){
-        listData.removeAt(index)
-        notifyDataSetChanged()
+//        listData.removeAt(index)
+//        notifyDataSetChanged()
+        onClickDelete(index)
     }
 
     fun setItems(items: List<Property>){
-//        listData = items
-//        notifyDataSetChanged()
+        listData = items as MutableList<Property>
+        notifyDataSetChanged()
     }
 
 }
