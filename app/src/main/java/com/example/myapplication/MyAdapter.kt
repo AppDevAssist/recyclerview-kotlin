@@ -13,12 +13,15 @@ import com.bumptech.glide.Glide
 import com.example.myapplication.models.Property
 import org.w3c.dom.Text
 
-class MyAdapter(private val data: List<Property>, val onClickDelete: (Int) -> Unit) : RecyclerView.Adapter<MyAdapter.MyViewHolder>()  {
+class MyAdapter(private val data: List<Property>, val showHideDelete: (Boolean) -> Unit) :
+    RecyclerView.Adapter<MyAdapter.MyViewHolder>() {
 
     private var listData: MutableList<Property> = data as MutableList<Property>
-    inner class MyViewHolder(val view: View): RecyclerView.ViewHolder(view){
+    var currentSelectedItemIndex = -1
 
-        fun bind(property: Property, index: Int){
+    inner class MyViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+
+        fun bind(property: Property, index: Int) {
             val title = view.findViewById<TextView>(R.id.tvTitle)
             val imageView = view.findViewById<ImageView>(R.id.imageView)
             val description = view.findViewById<TextView>(R.id.tvDescription)
@@ -29,35 +32,68 @@ class MyAdapter(private val data: List<Property>, val onClickDelete: (Int) -> Un
             constraintLayout.visibility = View.VISIBLE
             recyclerView.visibility = View.GONE
 
-
+            if (property.selected == true) {
+                button.visibility = View.VISIBLE
+            } else {
+                button.visibility = View.GONE
+            }
             title.text = property.title
             description.text = property.description
 
             Glide.with(view.context).load(property.image).centerCrop().into(imageView)
 
-            button.setOnClickListener{deleteItem(index)}
-
+            constraintLayout.setOnLongClickListener { markSelectedItem(index) }
+            constraintLayout.setOnClickListener { deselectItem(index) }
         }
 
-        fun bindRecyclerView(data: List<Property>){
+        fun bindRecyclerView(data: List<Property>) {
             val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
             val constraintLayout = view.findViewById<ConstraintLayout>(R.id.constraintLayout)
 
             constraintLayout.visibility = View.GONE
             recyclerView.visibility = View.VISIBLE
 
-            val manager : RecyclerView.LayoutManager = LinearLayoutManager(view.context, LinearLayoutManager.HORIZONTAL, true)
-            recyclerView.apply{
+            val manager: RecyclerView.LayoutManager =
+                LinearLayoutManager(view.context, LinearLayoutManager.HORIZONTAL, true)
+            recyclerView.apply {
                 val data = data as MutableList<Property>
-                var myAdapter = MyAdapter(data){index -> deleteItem(index)}
+                var myAdapter = MyAdapter(data) { show -> showHideDelete(show) }
                 layoutManager = manager
                 adapter = myAdapter
             }
         }
     }
 
+    fun deselectItem(index: Int) {
+        if (currentSelectedItemIndex == index) {
+            currentSelectedItemIndex = -1
+            listData.get(index).selected = false
+            notifyDataSetChanged()
+            showHideDelete(false)
+        }
+    }
+
+    fun markSelectedItem(index: Int): Boolean {
+        for (item in listData) {
+            item.selected = false
+        }
+
+        listData.get(index).selected = true
+        currentSelectedItemIndex = index
+        notifyDataSetChanged()
+        showHideDelete(true)
+        return true
+    }
+
+    fun deleteSelectedItem() {
+        if (currentSelectedItemIndex != -1) {
+            listData.removeAt(currentSelectedItemIndex)
+            notifyDataSetChanged()
+        }
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-         val v = LayoutInflater.from(parent.context).inflate(R.layout.list_item, parent, false)
+        val v = LayoutInflater.from(parent.context).inflate(R.layout.list_item, parent, false)
         return MyViewHolder(v)
     }
 
@@ -66,20 +102,19 @@ class MyAdapter(private val data: List<Property>, val onClickDelete: (Int) -> Un
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        if(listData[position].horizontal){
-                listData[position].data?.let { holder.bindRecyclerView(it)}
-        }else {
+        if (listData[position].horizontal) {
+            listData[position].data?.let { holder.bindRecyclerView(it) }
+        } else {
             holder.bind(listData[position], position)
         }
     }
 
-    fun deleteItem(index: Int){
+    fun deleteItem(index: Int) {
 //        listData.removeAt(index)
 //        notifyDataSetChanged()
-        onClickDelete(index)
     }
 
-    fun setItems(items: List<Property>){
+    fun setItems(items: List<Property>) {
         listData = items as MutableList<Property>
         notifyDataSetChanged()
     }
