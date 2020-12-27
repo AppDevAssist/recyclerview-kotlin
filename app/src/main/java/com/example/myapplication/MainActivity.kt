@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -25,6 +27,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var myAdapter: MyAdapter
     private lateinit var swipeRefresh: SwipeRefreshLayout
     private lateinit var shrimmerView: ShimmerFrameLayout
+    private var mainMenu: Menu? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +45,25 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun showHideDelete(show: Boolean){
+        mainMenu?.findItem(R.id.menu_delete)?.isVisible = show
+    }
+
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        mainMenu = menu
+        menuInflater.inflate(R.menu.main_menu, menu)
+        showHideDelete(false)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId == R.id.menu_delete){
+            deleteItem()
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     fun getAllData(){
         Api.retrofitService.getAllData().enqueue(object: Callback<List<Property>>{
             override fun onResponse(
@@ -56,7 +78,7 @@ class MainActivity : AppCompatActivity() {
                 if(response.isSuccessful){
                     recyclerView = findViewById<RecyclerView>(R.id.recycler_view).apply{
                         data = response.body() as MutableList<Property>
-                        myAdapter = MyAdapter(data){index -> deleteItem(index)}
+                        myAdapter = MyAdapter(data){show -> showHideDelete(show)}
                         layoutManager = manager
                         adapter = myAdapter
                     }
@@ -69,14 +91,14 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    fun deleteItem(index: Int){
+    fun deleteItem(){
         val alertBuilder = AlertDialog.Builder(this)
         alertBuilder.setTitle("Delete")
         alertBuilder.setMessage("Do you want to delete this item ?")
         alertBuilder.setPositiveButton("Delete"){_,_ ->
-            if(::data.isInitialized && ::myAdapter.isInitialized){
-                data.removeAt(index)
-                myAdapter.setItems(data)
+            if(::myAdapter.isInitialized){
+                myAdapter.deleteSelectedItem()
+                showHideDelete(false)
                 Toast.makeText(this, "Item deleted", Toast.LENGTH_SHORT).show()
             }
         }

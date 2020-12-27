@@ -46,9 +46,10 @@
             android:layout_height="0dp"
             android:layout_marginTop="5dp"
             android:layout_marginEnd="5dp"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:background="@drawable/ic_baseline_delete_24"
+            android:background="@drawable/ic_check"
             app:layout_constraintWidth_percent=".08"
             app:layout_constraintDimensionRatio="1:1"
             android:layout_marginRight="5dp" />
@@ -61,9 +62,10 @@
             app:layout_constraintTop_toBottomOf="@+id/tvTitle"
             app:layout_constraintBottom_toBottomOf="parent"
             android:textSize="18sp"
+            android:layout_marginRight="10dp"
             android:fontFamily="sans-serif"
             android:text="This is a very long title and here it is"
-             />
+            android:layout_marginEnd="10dp" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
