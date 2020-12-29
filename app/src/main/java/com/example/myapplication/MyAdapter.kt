@@ -17,7 +17,7 @@ class MyAdapter(private val data: List<Property>, val showHideDelete: (Boolean) 
     RecyclerView.Adapter<MyAdapter.MyViewHolder>() {
 
     private var listData: MutableList<Property> = data as MutableList<Property>
-    var currentSelectedItemIndex = -1
+    var selectedList = mutableListOf<Int>()
 
     inner class MyViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
@@ -65,11 +65,11 @@ class MyAdapter(private val data: List<Property>, val showHideDelete: (Boolean) 
     }
 
     fun deselectItem(index: Int) {
-        if (currentSelectedItemIndex == index) {
-            currentSelectedItemIndex = -1
-            listData.get(index).selected = false
+        if (selectedList.contains(index)) {
+            selectedList.remove(index)
+            listData[index].selected = false
             notifyDataSetChanged()
-            showHideDelete(false)
+            showHideDelete(selectedList.isNotEmpty())
         }
     }
 
@@ -78,18 +78,24 @@ class MyAdapter(private val data: List<Property>, val showHideDelete: (Boolean) 
             item.selected = false
         }
 
-        listData.get(index).selected = true
-        currentSelectedItemIndex = index
+        if(!selectedList.contains(index)){
+            selectedList.add(index)
+        }
+
+        selectedList.forEach {
+            listData[it].selected = true
+        }
+
         notifyDataSetChanged()
         showHideDelete(true)
         return true
     }
 
     fun deleteSelectedItem() {
-        if (currentSelectedItemIndex != -1) {
-            listData.removeAt(currentSelectedItemIndex)
-            notifyDataSetChanged()
+        if(selectedList.isNotEmpty()){
+            listData.removeAll{item -> item.selected == true}
         }
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
