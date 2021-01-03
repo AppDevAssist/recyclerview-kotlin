@@ -116,8 +116,8 @@ class MyAdapter(private val data: List<Property>, val showHideDelete: (Boolean) 
     }
 
     fun deleteItem(index: Int) {
-//        listData.removeAt(index)
-//        notifyDataSetChanged()
+        listData.removeAt(index)
+        notifyDataSetChanged()
     }
 
     fun setItems(items: List<Property>) {
