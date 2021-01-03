@@ -9,6 +9,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -81,6 +82,17 @@ class MainActivity : AppCompatActivity() {
                         myAdapter = MyAdapter(data){show -> showHideDelete(show)}
                         layoutManager = manager
                         adapter = myAdapter
+                        val swipeDelete = object : SwipeToDeleteCallback(this@MainActivity){
+                            override fun onSwiped(
+                                viewHolder: RecyclerView.ViewHolder,
+                                direction: Int
+                            ) {
+                                myAdapter.deleteItem(viewHolder.adapterPosition)
+                            }
+                        }
+
+                        val touchHelper  = ItemTouchHelper(swipeDelete)
+                        touchHelper.attachToRecyclerView(this)
                     }
                 }
             }
