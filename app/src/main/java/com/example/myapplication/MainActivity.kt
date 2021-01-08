@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.myapplication.databinding.ActivityMainBinding
 import com.example.myapplication.models.Property
 import com.example.myapplication.network.Api
 import com.facebook.shimmer.ShimmerFrameLayout
@@ -23,22 +24,20 @@ import retrofit2.Response
 class MainActivity : AppCompatActivity() {
     lateinit var data: MutableList<Property>
 
-    private lateinit var recyclerView: RecyclerView
     private lateinit var manager: RecyclerView.LayoutManager
     private lateinit var myAdapter: MyAdapter
-    private lateinit var swipeRefresh: SwipeRefreshLayout
-    private lateinit var shrimmerView: ShimmerFrameLayout
     private var mainMenu: Menu? = null
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         manager = LinearLayoutManager(this)
-        swipeRefresh = findViewById(R.id.swipeRefresh)
-        shrimmerView = findViewById(R.id.shimmer_view_container)
 
-        swipeRefresh.setOnRefreshListener {
+        binding.swipeRefresh.setOnRefreshListener {
             getAllData()
         }
         
@@ -71,13 +70,13 @@ class MainActivity : AppCompatActivity() {
                 call: Call<List<Property>>,
                 response: Response<List<Property>>
             ) {
-                shrimmerView.stopShimmer()
-                shrimmerView.visibility = View.GONE
-                if(swipeRefresh.isRefreshing){
-                    swipeRefresh.isRefreshing = false
+                binding.shimmerViewContainer.stopShimmer()
+                binding.shimmerViewContainer.visibility = View.GONE
+                if(binding.swipeRefresh.isRefreshing){
+                    binding.swipeRefresh.isRefreshing = false
                 }
                 if(response.isSuccessful){
-                    recyclerView = findViewById<RecyclerView>(R.id.recycler_view).apply{
+                    binding.recyclerView.apply{
                         data = response.body() as MutableList<Property>
                         myAdapter = MyAdapter(data){show -> showHideDelete(show)}
                         layoutManager = manager
