@@ -10,6 +10,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.myapplication.databinding.ListItemBinding
 import com.example.myapplication.models.Property
 import org.w3c.dom.Text
 
@@ -19,43 +20,34 @@ class MyAdapter(private val data: List<Property>, val showHideDelete: (Boolean) 
     private var listData: MutableList<Property> = data as MutableList<Property>
     var selectedList = mutableListOf<Int>()
 
-    inner class MyViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+    inner class MyViewHolder(val view: ListItemBinding) : RecyclerView.ViewHolder(view.root) {
 
         fun bind(property: Property, index: Int) {
-            val title = view.findViewById<TextView>(R.id.tvTitle)
-            val imageView = view.findViewById<ImageView>(R.id.imageView)
-            val description = view.findViewById<TextView>(R.id.tvDescription)
-            val button = view.findViewById<Button>(R.id.button)
-            val constraintLayout = view.findViewById<ConstraintLayout>(R.id.constraintLayout)
-            val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
-
-            constraintLayout.visibility = View.VISIBLE
-            recyclerView.visibility = View.GONE
+            view.constraintLayout.visibility = View.VISIBLE
+            view.recyclerView.visibility = View.GONE
 
             if (property.selected == true) {
-                button.visibility = View.VISIBLE
+                view.button.visibility = View.VISIBLE
             } else {
-                button.visibility = View.GONE
+                view.button.visibility = View.GONE
             }
-            title.text = property.title
-            description.text = property.description
+            view.tvTitle.text = property.title
+            view.tvDescription.text = property.description
 
-            Glide.with(view.context).load(property.image).centerCrop().into(imageView)
+            Glide.with(view.root.context).load(property.image).centerCrop().into(view.imageView)
 
-            constraintLayout.setOnLongClickListener { markSelectedItem(index) }
-            constraintLayout.setOnClickListener { deselectItem(index) }
+            view.constraintLayout.setOnLongClickListener { markSelectedItem(index) }
+            view.constraintLayout.setOnClickListener { deselectItem(index) }
         }
 
         fun bindRecyclerView(data: List<Property>) {
-            val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
-            val constraintLayout = view.findViewById<ConstraintLayout>(R.id.constraintLayout)
 
-            constraintLayout.visibility = View.GONE
-            recyclerView.visibility = View.VISIBLE
+            view.constraintLayout.visibility = View.GONE
+            view.recyclerView.visibility = View.VISIBLE
 
             val manager: RecyclerView.LayoutManager =
-                LinearLayoutManager(view.context, LinearLayoutManager.HORIZONTAL, true)
-            recyclerView.apply {
+                LinearLayoutManager(view.root.context, LinearLayoutManager.HORIZONTAL, true)
+            view.recyclerView.apply {
                 val data = data as MutableList<Property>
                 var myAdapter = MyAdapter(data) { show -> showHideDelete(show) }
                 layoutManager = manager
@@ -99,8 +91,9 @@ class MyAdapter(private val data: List<Property>, val showHideDelete: (Boolean) 
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val v = LayoutInflater.from(parent.context).inflate(R.layout.list_item, parent, false)
-        return MyViewHolder(v)
+        val v = LayoutInflater.from(parent.context)
+        val listItemBinding = ListItemBinding.inflate(v, parent, false)
+        return MyViewHolder(listItemBinding)
     }
 
     override fun getItemCount(): Int {
