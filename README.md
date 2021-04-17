@@ -83,3 +83,8 @@ https://youtu.be/1s1Oy3MBcsQ
 
 ### Video:
 https://youtu.be/cy9dtDiiocA
+
+## More tutorials on RecyclerView:
+
+###RecyclerView and Data binding:
+Repo: https://github.com/AppDevAssist/recyclerview-data-binding
